@@ -1,0 +1,156 @@
+<!-- pages/practice/practice.wxml - 刷题页 -->
+<view class="container">
+  <!-- 顶部统计 -->
+  <view class="practice-header">
+    <view class="header-left">
+      <view class="header-title">每日刷题</view>
+      <view class="header-sub">坚持练习，稳步提升</view>
+    </view>
+    <view class="streak-badge">
+      <view class="streak-num">{{streak}}</view>
+      <view class="streak-label">连续天数</view>
+    </view>
+  </view>
+
+  <!-- 学科选择 -->
+  <view class="subject-tabs">
+    <view 
+      class="tab-item {{currentSubject === item.id ? 'active' : ''}}"
+      wx:for="{{subjects}}"
+      wx:key="id"
+      bindtap="switchSubject"
+      data-id="{{item.id}}"
+    >
+      {{item.emoji}} {{item.name}}
+    </view>
+  </view>
+
+  <!-- 答题模式选择 -->
+  <view class="mode-grid" wx:if="{{!isPracticing}}">
+    <view class="mode-card" bindtap="startPractice" data-mode="daily">
+      <view class="mode-icon">📝</view>
+      <view class="mode-name">每日一练</view>
+      <view class="mode-desc">10道精选题目</view>
+    </view>
+    <view class="mode-card" bindtap="startPractice" data-mode="weak">
+      <view class="mode-icon">🎯</view>
+      <view class="mode-name">薄弱点专练</view>
+      <view class="mode-desc">AI智能推荐</view>
+    </view>
+    <view class="mode-card" bindtap="startPractice" data-mode="random">
+      <view class="mode-icon">🎲</view>
+      <view class="mode-name">随机刷题</view>
+      <view class="mode-desc">随机抽取题目</view>
+    </view>
+    <view class="mode-card" bindtap="startPractice" data-mode="exam">
+      <view class="mode-icon">📊</view>
+      <view class="mode-name">模拟考试</view>
+      <view class="mode-desc">限时模拟测试</view>
+    </view>
+  </view>
+
+  <!-- 答题区域 -->
+  <view class="practice-area" wx:if="{{isPracticing}}">
+    <!-- 进度条 -->
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{(currentIndex + 1) / totalQuestions * 100}}%"></view>
+    </view>
+    <view class="progress-text">{{currentIndex + 1}} / {{totalQuestions}}</view>
+
+    <!-- 题目卡片 -->
+    <view class="question-card">
+      <view class="question-type">
+        <view class="type-tag">{{currentQuestion.type}}</view>
+        <view class="difficulty">
+          <text wx:for="{{currentQuestion.difficulty}}" wx:key="index">⭐</text>
+        </view>
+      </view>
+      
+      <view class="question-text">{{currentQuestion.question}}</view>
+
+      <!-- 选项列表（选择题） -->
+      <view class="options-list" wx:if="{{currentQuestion.type === '单选题' || currentQuestion.type === '多选题'}}">
+        <view 
+          class="option-item {{selectedOption === index ? 'selected' : ''}} {{showAnswer && index === currentQuestion.answer ? 'correct' : ''}} {{showAnswer && selectedOption === index && index !== currentQuestion.answer ? 'wrong' : ''}}"
+          wx:for="{{currentQuestion.options}}"
+          wx:key="index"
+          bindtap="selectOption"
+          data-index="{{index}}"
+        >
+          <view class="option-label">{{optionLabels[index]}}</view>
+          <view class="option-text">{{item}}</view>
+          <view class="option-icon" wx:if="{{showAnswer && index === currentQuestion.answer}}">✅</view>
+          <view class="option-icon" wx:if="{{showAnswer && selectedOption === index && index !== currentQuestion.answer}}">❌</view>
+        </view>
+      </view>
+
+      <!-- 填空/简答题输入 -->
+      <view class="answer-input-area" wx:if="{{currentQuestion.type === '填空题' || currentQuestion.type === '简答题'}}">
+        <textarea 
+          class="answer-input"
+          placeholder="请输入你的答案..."
+          value="{{userAnswer}}"
+          bindinput="onAnswerInput"
+          disabled="{{showAnswer}}"
+        />
+      </view>
+
+      <!-- 提交按钮 -->
+      <view class="submit-area" wx:if="{{!showAnswer}}">
+        <button class="btn-primary submit-btn" bindtap="submitAnswer" disabled="{{!hasAnswer}}">
+          提交答案
+        </button>
+      </view>
+
+      <!-- 解析区域 -->
+      <view class="explanation-area" wx:if="{{showAnswer}}">
+        <view class="result-header {{isCorrect ? 'correct' : 'wrong'}}">
+          <view class="result-icon">{{isCorrect ? '🎉' : '💪'}}</view>
+          <view class="result-text">{{isCorrect ? '回答正确！' : '回答错误，看看解析吧'}}</view>
+        </view>
+        
+        <view class="explanation-card">
+          <view class="explanation-title">📖 解析</view>
+          <view class="explanation-content">{{currentQuestion.explanation}}</view>
+          
+          <!-- AI深度解析按钮 -->
+          <view class="ai-explain-btn" bindtap="getAIExplanation">
+            🤖 让AI深度讲解这道题
+          </view>
+        </view>
+
+        <!-- 下一题按钮 -->
+        <button class="btn-primary next-btn" bindtap="nextQuestion">
+          {{currentIndex < totalQuestions - 1 ? '下一题' : '查看结果'}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 结果页 -->
+  <view class="result-page" wx:if="{{showResult}}">
+    <view class="result-card">
+      <view class="result-emoji">{{resultEmoji}}</view>
+      <view class="result-title">{{resultTitle}}</view>
+      <view class="result-stats">
+        <view class="result-stat">
+          <view class="rs-num">{{resultCorrect}}</view>
+          <view class="rs-label">答对</view>
+        </view>
+        <view class="result-stat">
+          <view class="rs-num">{{resultWrong}}</view>
+          <view class="rs-label">答错</view>
+        </view>
+        <view class="result-stat">
+          <view class="rs-num">{{resultAccuracy}}%</view>
+          <view class="rs-label">正确率</view>
+        </view>
+      </view>
+      
+      <view class="result-actions">
+        <button class="btn-outline" bindtap="resetPractice">再练一组</button>
+        <button class="btn-primary" bindtap="reviewWrong">查看错题</button>
+      </view>
+    </view>
+  </view>
+</view>
