@@ -1,0 +1,129 @@
+<!-- pages/chat/chat.wxml - AI问答页 -->
+<view class="chat-container">
+  <!-- 学科选择栏 -->
+  <view class="subject-bar">
+    <scroll-view scroll-x class="subject-scroll">
+      <view 
+        class="subject-chip {{currentSubject === item.id ? 'active' : ''}}"
+        wx:for="{{subjects}}" 
+        wx:key="id"
+        bindtap="switchSubject"
+        data-id="{{item.id}}"
+      >
+        {{item.emoji}} {{item.name}}
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view 
+    scroll-y 
+    class="message-list" 
+    scroll-into-view="{{scrollToMessage}}"
+    scroll-with-animation
+  >
+    <!-- 欢迎消息 -->
+    <view class="welcome-card" wx:if="{{messages.length === 0}}">
+      <view class="welcome-icon">🤖</view>
+      <view class="welcome-title">你好，我是考研AI助手</view>
+      <view class="welcome-desc">
+        你可以问我任何考研相关的问题，包括知识点解析、真题讲解、学习规划等
+      </view>
+      <view class="quick-questions">
+        <view 
+          class="quick-item" 
+          wx:for="{{quickQuestions}}" 
+          wx:key="index"
+          bindtap="sendQuickQuestion"
+          data-text="{{item}}"
+        >
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 消息列表 -->
+    <view 
+      class="message-item {{item.role}}" 
+      wx:for="{{messages}}" 
+      wx:key="id"
+      id="msg-{{item.id}}"
+    >
+      <!-- AI头像 -->
+      <view class="avatar" wx:if="{{item.role === 'assistant'}}">
+        <view class="avatar-icon">🤖</view>
+      </view>
+      
+      <!-- 消息气泡 -->
+      <view class="bubble {{item.role}}">
+        <!-- 加载中 -->
+        <view class="loading-dots" wx:if="{{item.loading}}">
+          <view></view>
+          <view></view>
+          <view></view>
+        </view>
+        
+        <!-- 消息内容 -->
+        <rich-text wx:else nodes="{{item.htmlContent || item.content}}" class="msg-content"></rich-text>
+        
+        <!-- 消息操作 -->
+        <view class="msg-actions" wx:if="{{item.role === 'assistant' && !item.loading}}">
+          <view class="action-btn" bindtap="copyMessage" data-content="{{item.content}}">
+            📋 复制
+          </view>
+          <view class="action-btn" bindtap="collectMessage" data-id="{{item.id}}">
+            ⭐ 收藏
+          </view>
+        </view>
+      </view>
+
+      <!-- 用户头像 -->
+      <view class="avatar" wx:if="{{item.role === 'user'}}">
+        <view class="avatar-icon user">👤</view>
+      </view>
+    </view>
+
+    <!-- 底部占位 -->
+    <view class="bottom-spacer" id="bottom"></view>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-area">
+    <view class="input-wrapper">
+      <textarea 
+        class="input-field"
+        value="{{inputValue}}"
+        placeholder="输入你的问题..."
+        placeholder-class="input-placeholder"
+        bindinput="onInput"
+        bindconfirm="sendMessage"
+        confirm-type="send"
+        auto-height
+        maxlength="500"
+        cursor-spacing="20"
+      />
+      <view 
+        class="send-btn {{inputValue.trim() ? 'active' : ''}}" 
+        bindtap="sendMessage"
+      >
+        发送
+      </view>
+    </view>
+    
+    <!-- 快捷功能栏 -->
+    <view class="quick-bar">
+      <view class="quick-btn" bindtap="useVoice">
+        🎤 语音
+      </view>
+      <view class="quick-btn" bindtap="uploadImage">
+        📷 拍照提问
+      </view>
+      <view class="quick-btn" bindtap="clearChat">
+        🗑️ 清空
+      </view>
+      <view class="quick-btn" bindtap="showHistory">
+        📚 历史
+      </view>
+    </view>
+  </view>
+</view>
