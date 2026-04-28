@@ -1,0 +1,86 @@
+<!-- pages/index/index.wxml - 首页 -->
+<view class="container">
+  <!-- 欢迎横幅 -->
+  <view class="banner">
+    <view class="banner-content">
+      <view class="greeting">{{greeting}}，{{userName || '考研人'}} 👋</view>
+      <view class="sub-text">距离考研还有 <text class="countdown">{{daysLeft}}</text> 天</view>
+    </view>
+    <view class="banner-decoration">
+      <view class="deco-circle c1"></view>
+      <view class="deco-circle c2"></view>
+    </view>
+  </view>
+
+  <!-- 今日学习统计 -->
+  <view class="stats-row">
+    <view class="stat-item">
+      <view class="stat-num">{{stats.totalQuestions}}</view>
+      <view class="stat-label">已刷题数</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-num">{{stats.correctRate}}%</view>
+      <view class="stat-label">正确率</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-num">{{stats.studyDays}}</view>
+      <view class="stat-label">学习天数</view>
+    </view>
+  </view>
+
+  <!-- 快捷功能入口 -->
+  <view class="section-title">常用功能</view>
+  <view class="feature-grid">
+    <view class="feature-item" bindtap="goToChat" data-type="ask">
+      <view class="feature-icon" style="background: #EEF2FF;">🤖</view>
+      <view class="feature-name">AI问答</view>
+      <view class="feature-desc">不懂就问</view>
+    </view>
+    <view class="feature-item" bindtap="goToChat" data-type="explain">
+      <view class="feature-icon" style="background: #ECFDF5;">📖</view>
+      <view class="feature-name">概念解释</view>
+      <view class="feature-desc">深入浅出</view>
+    </view>
+    <view class="feature-item" bindtap="goToChat" data-type="plan">
+      <view class="feature-icon" style="background: #FFFBEB;">📋</view>
+      <view class="feature-name">学习规划</view>
+      <view class="feature-desc">定制计划</view>
+    </view>
+    <view class="feature-item" bindtap="goToPractice">
+      <view class="feature-icon" style="background: #FEF2F2;">✍️</view>
+      <view class="feature-name">每日刷题</view>
+      <view class="feature-desc">巩固知识</view>
+    </view>
+  </view>
+
+  <!-- 学科选择 -->
+  <view class="section-title">我的学科</view>
+  <view class="subject-list">
+    <view 
+      class="subject-item {{currentSubject === item.id ? 'active' : ''}}" 
+      wx:for="{{subjects}}" 
+      wx:key="id"
+      bindtap="selectSubject"
+      data-id="{{item.id}}"
+    >
+      <view class="subject-emoji">{{item.emoji}}</view>
+      <view class="subject-info">
+        <view class="subject-name">{{item.name}}</view>
+        <view class="subject-progress">已完成 {{item.progress}}%</view>
+      </view>
+      <view class="subject-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 考研资讯 -->
+  <view class="section-title">考研资讯</view>
+  <view class="news-list">
+    <view class="news-item" wx:for="{{newsList}}" wx:key="id" bindtap="openNews" data-url="{{item.url}}">
+      <view class="news-tag {{item.type}}">{{item.tag}}</view>
+      <view class="news-title">{{item.title}}</view>
+      <view class="news-date">{{item.date}}</view>
+    </view>
+  </view>
+</view>
