@@ -1,0 +1,106 @@
+<!-- pages/profile/profile.wxml - 个人中心 -->
+<view class="container">
+  <!-- 用户信息卡片 -->
+  <view class="profile-card">
+    <view class="avatar-area">
+      <view class="user-avatar">
+        <image wx:if="{{userInfo.avatarUrl}}" src="{{userInfo.avatarUrl}}" mode="aspectFill"/>
+        <view wx:else class="avatar-placeholder">👤</view>
+      </view>
+      <view class="user-info">
+        <view class="user-name">{{userInfo.nickName || '考研人'}}</view>
+        <view class="user-desc">坚持就是胜利 💪</view>
+      </view>
+    </view>
+    
+    <!-- 学习数据总览 -->
+    <view class="data-overview">
+      <view class="data-item">
+        <view class="data-num">{{stats.totalQuestions}}</view>
+        <view class="data-label">总刷题量</view>
+      </view>
+      <view class="data-divider"></view>
+      <view class="data-item">
+        <view class="data-num">{{stats.correctRate}}%</view>
+        <view class="data-label">平均正确率</view>
+      </view>
+      <view class="data-divider"></view>
+      <view class="data-item">
+        <view class="data-num">{{stats.studyDays}}</view>
+        <view class="data-label">学习天数</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 目标院校 -->
+  <view class="card" bindtap="setTargetSchool">
+    <view class="card-row">
+      <view class="card-left">
+        <view class="card-icon">🎓</view>
+        <view class="card-text">
+          <view class="card-label">目标院校</view>
+          <view class="card-value">{{targetSchool || '点击设置'}}</view>
+        </view>
+      </view>
+      <view class="card-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="card">
+    <view class="menu-item" bindtap="goToPage" data-page="collections">
+      <view class="menu-icon">⭐</view>
+      <view class="menu-text">我的收藏</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToPage" data-page="wrongbook">
+      <view class="menu-icon">📕</view>
+      <view class="menu-text">错题本</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToPage" data-page="history">
+      <view class="menu-icon">📚</view>
+      <view class="menu-text">问答历史</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToPage" data-page="plan">
+      <view class="menu-icon">📋</view>
+      <view class="menu-text">学习计划</view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="menu-item" bindtap="goToPage" data-page="settings">
+      <view class="menu-icon">⚙️</view>
+      <view class="menu-text">设置</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToPage" data-page="feedback">
+      <view class="menu-icon">💬</view>
+      <view class="menu-text">意见反馈</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToPage" data-page="about">
+      <view class="menu-icon">ℹ️</view>
+      <view class="menu-text">关于我们</view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 每日打卡分享 -->
+  <view class="card share-card" bindtap="shareStudyCard">
+    <view class="share-content">
+      <view class="share-icon">📊</view>
+      <view class="share-text">
+        <view class="share-title">生成学习打卡图</view>
+        <view class="share-desc">分享到朋友圈，记录你的备考历程</view>
+      </view>
+    </view>
+  </view>
+</view>
